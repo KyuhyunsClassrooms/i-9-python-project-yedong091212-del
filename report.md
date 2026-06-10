@@ -2,16 +2,16 @@
 
 ## 1. 프로그램 주제와 목적
 
-내 프로그램의 주제:
+내 프로그램의 주제:환자증상기반 질병진단기
 
-이 프로그램을 만든 이유:
+이 프로그램을 만든 이유:인공지능을 사용해서 환자의 질병을 판단하는 프로그램을 만들어서 미래에는 병원에 안가고도 진단받을수 있으면 신기할것 같다는 생각을 평소에해서
 
 
 ---
 
 ## 2. 문제 분해 및 모델링
 
-### 입력
+### 입력 환자의 증상을 입력받는다
 
 
 ### 처리
@@ -146,3 +146,116 @@ Gemini가 제안했지만 내가 수정하거나 사용하지 않은 부분:
 3. 가장 중요한 함수는 무엇이고 어떤 역할을 하는가?
 4. 조건문과 반복문은 어디에서 사용되었는가?
 5. Gemini가 도와준 부분과 내가 직접 수정한 부분은 무엇인가?
+
+
+diseases = [
+    ["감기", ["기침", "인후통", "두통"]],
+    ["독감", ["발열", "기침", "두통"]],
+    ["코로나", ["발열", "기침", "호흡곤란"]],
+    ["편도염", ["인후통", "발열"]]
+]
+
+patients = []
+
+
+def input_symptoms():
+    symptoms = []
+
+    print("증상이 있으면 y 입력, 없으면 n 입력")
+
+    answer = input("발열: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("발열")
+
+    answer = input("기침: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("기침")
+
+    answer = input("인후통: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("인후통")
+
+    answer = input("두통: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("두통")
+
+    answer = input("호흡곤란: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("호흡곤란")
+
+    return symptoms
+
+
+def diagnose(symptoms):
+    best_disease = ""
+    max_score = 0
+
+    for disease in diseases:
+        score = 0
+
+        for symptom in symptoms:
+            if symptom in disease[1]:
+                score += 1
+
+        if score > max_score:
+            max_score = score
+            best_disease = disease[0]
+
+    return best_disease
+
+
+def add_patient():
+    name = input("환자 이름: ")
+
+    symptoms = input_symptoms()
+
+    result = diagnose(symptoms)
+
+    patients.append([name, symptoms, result])
+
+    print()
+    print("===== 판독 결과 =====")
+    print("이름:", name)
+    print("예상 질환:", result)
+
+
+def view_patients():
+    print()
+    print("===== 환자 기록 =====")
+
+    if len(patients) == 0:
+        print("기록이 없습니다.")
+        return
+
+    for patient in patients:
+        print("이름:", patient[0])
+
+        print("증상:", end=" ")
+        for symptom in patient[1]:
+            print(symptom, end=" ")
+        print()
+
+        print("예상 질환:", patient[2])
+        print("------------------")
+
+
+while True:
+    print()
+    print("1. 환자 등록")
+    print("2. 기록 조회")
+    print("3. 종료")
+
+    menu = input("선택: ")
+
+    if menu == "1":
+        add_patient()
+
+    elif menu == "2":
+        view_patients()
+
+    elif menu == "3":
+        print("프로그램 종료")
+        break
+
+    else:
+        print("잘못 입력했습니다.")
