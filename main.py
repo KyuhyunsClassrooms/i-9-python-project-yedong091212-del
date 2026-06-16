@@ -1,101 +1,118 @@
 # AI 활용 자유 주제 파이썬 미니 프로젝트
-# 이름 또는 학번: 
-# 프로젝트 주제: 
-
-# ============================================================
-# 사용 안내
-# ------------------------------------------------------------
-# 이 파일은 예시 골격입니다.
-# 그대로 제출하지 말고, 반드시 자신의 주제에 맞게 수정하세요.
-#
-# 필수 조건
-# 1. 2차원 리스트 사용
-# 2. 함수 2개 이상, 가능하면 3개 이상 분리
-# 3. 조건문 사용
-# 4. 반복문 사용
-# 5. 실행 결과 출력
-# ============================================================
-
-
-# ------------------------------------------------------------
-# 1. 데이터 준비: 2차원 리스트
-# ------------------------------------------------------------
-# 아래 예시는 "활동 추천 프로그램"입니다.
-# 자신의 주제에 맞게 data를 만드세요.
-#
-# 현재 열의 의미:
-# 0번 열: 활동 이름
-# 1번 열: 필요한 시간(분)
-# 2번 열: 추천 기분
-# 3번 열: 활동 유형
-# ------------------------------------------------------------
-
-activities = [
-    ["산책하기", 30, "피곤", "운동"],
-    ["짧은 낮잠", 20, "피곤", "휴식"],
-    ["좋아하는 음악 듣기", 10, "우울", "휴식"],
-    ["문제집 3쪽 풀기", 40, "차분", "공부"],
-    ["방 정리하기", 25, "답답", "생활"],
-    ["친구에게 연락하기", 15, "우울", "소통"],
+# 이름 또는 학번:20922 정예동
+# 프로젝트 주제:환자증상기반으로 질병진단하기
+diseases = [
+    ["감기", ["기침", "인후통", "두통"]],
+    ["독감", ["발열", "기침", "두통"]],
+    ["코로나", ["발열", "기침", "호흡곤란"]],
+    ["편도염", ["인후통", "발열"]]
 ]
 
-
-# ------------------------------------------------------------
-# 2. 함수 정의
-# ------------------------------------------------------------
-
-def show_intro():
-    """프로그램 제목과 안내를 출력한다."""
-    print("=" * 40)
-    print("AI 활용 자유 주제 파이썬 미니 프로젝트")
-    print("예시: 기분과 시간에 따른 활동 추천기")
-    print("=" * 40)
+patients = []
 
 
-def get_user_input():
-    """사용자에게 기분과 남은 시간을 입력받는다."""
-    mood = input("현재 기분을 입력하세요. 예: 피곤, 우울, 차분, 답답: ")
-    minutes = int(input("사용 가능한 시간을 분 단위로 입력하세요: "))
-    return mood, minutes
+def input_symptoms():
+    symptoms = []
+
+    print("증상이 있으면 y 입력, 없으면 n 입력")
+
+    answer = input("발열: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("발열")
+
+    answer = input("기침: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("기침")
+
+    answer = input("인후통: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("인후통")
+
+    answer = input("두통: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("두통")
+
+    answer = input("호흡곤란: ")
+    if answer == "y" or answer == "Y":
+        symptoms.append("호흡곤란")
+
+    return symptoms
 
 
-def find_recommendations(data, mood, minutes):
-    """2차원 리스트를 반복하며 조건에 맞는 활동을 찾는다."""
-    results = []
+def diagnose(symptoms):
+    best_disease = ""
+    max_score = 0
 
-    for row in data:
-        name = row[0]
-        required_minutes = row[1]
-        recommended_mood = row[2]
-        activity_type = row[3]
+    for disease in diseases:
+        score = 0
 
-        # 조건문: 사용자의 기분과 시간이 활동 조건에 맞는지 판단한다.
-        if recommended_mood == mood and required_minutes <= minutes:
-            results.append([name, required_minutes, activity_type])
+        for symptom in symptoms:
+            if symptom in disease[1]:
+                score += 1
 
-    return results
+        if score > max_score:
+            max_score = score
+            best_disease = disease[0]
+
+    # 일치하는 증상이 하나도 없는 경우
+    if max_score == 0:
+        return "판단 불가"
+
+    return best_disease
 
 
-def print_result(results):
-    """추천 결과를 출력한다."""
-    print("\n[추천 결과]")
+def add_patient():
+    name = input("환자번호: ")
 
-    if len(results) == 0:
-        print("조건에 맞는 활동이 없습니다.")
-        print("시간을 늘리거나 다른 기분을 입력해 보세요.")
+    symptoms = input_symptoms()
+
+    result = diagnose(symptoms)
+
+    patients.append([name, symptoms, result])
+
+    print()
+    print("===== 판독 결과 =====")
+    print("이름:", name)
+    print("예상 질환:", result)
+
+
+def view_patients():
+    print()
+    print("===== 환자 기록 =====")
+
+    if len(patients) == 0:
+        print("기록이 없습니다.")
+        return
+
+    for patient in patients:
+        print("이름:", patient[0])
+
+        print("증상:", end=" ")
+        for symptom in patient[1]:
+            print(symptom, end=" ")
+        print()
+
+        print("예상 질환:", patient[2])
+        print("------------------")
+
+
+while True:
+    print()
+    print("1. 환자 등록")
+    print("2. 기록 조회")
+    print("3. 종료")
+
+    menu = input("선택: ")
+
+    if menu == "1":
+        add_patient()
+
+    elif menu == "2":
+        view_patients()
+
+    elif menu == "3":
+        print("프로그램 종료")
+        break
+
     else:
-        for item in results:
-            print(f"- {item[0]} / {item[1]}분 / 유형: {item[2]}")
-
-
-def main():
-    show_intro()
-    mood, minutes = get_user_input()
-    results = find_recommendations(activities, mood, minutes)
-    print_result(results)
-
-
-# ------------------------------------------------------------
-# 3. 프로그램 실행
-# ------------------------------------------------------------
-main()
+        print("잘못 입력했습니다.")
